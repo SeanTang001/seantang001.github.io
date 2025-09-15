@@ -11,7 +11,7 @@ Hi! I'm an Undergraduate Student studying Computer Science & Engineering at UCLA
 
 ### Interests
 
-I'm interested in AI and its application in the domain of systems and security, specifically in the context of Automated Reasoning. I'm also interested in AI for Science in general and software-hardware co-design. 
+<!-- I'm interested in AI for systems security, specifically in the context of Automated Reasoning. I'm also interested in AI for Science in general and software-hardware co-design.  -->
 
 I'm currently advised by Professor **[Yuan Tian](https://www.ytian.info/)** of UCLA. We're currently working on a project exploring applications of LLM for automated specification generation from natural language. Previously, I worked on auditing the security of keysight test equipment. 
 
