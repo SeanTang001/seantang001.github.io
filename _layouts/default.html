@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title | default: "Sean Tang" }}</title>
+  <link rel="stylesheet" href="{{ '/styles/style.css' | relative_url }}">
+</head>
+<body>
+  {% include navbar.html %}
+  <div class="main">
+    {{ content }}
+  </div>
+</body>
+</html>
