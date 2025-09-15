@@ -15,7 +15,7 @@ Zhang, K., **Tang, S.**, Zhu, V. et al. *An end-to-end recurrent compressed sens
 
 [2025/07] [Operator Precedence Parser](parser.html)
 
-[2025/05] [Teleoperating FPGA Roomba Capstone Report](https://www.overleaf.com/project/683e675884dd731fa4513db3)
+[2025/05] [Teleoperating FPGA Roomba Capstone Report](https://www.overleaf.com/read/szgxqhfjvkqq#2f1da2)
 
 <!-- [2025/03] [Equation test](eq_test.html) -->
 

@@ -15,7 +15,7 @@ I'm interested in AI and its application in the domain of systems and security, 
 
 I'm currently advised by Professor **[Yuan Tian](https://www.ytian.info/)** of UCLA. We're currently working on a project exploring applications of LLM for automated specification generation from natural language. Previously, I worked on auditing the security of keysight test equipment. 
 
-I also collaborate with Professor **[Weijian Yang](www.ece.ucdavis.edu/~wejyang/home.html)** of UC Davis, where I worked on [DeepCaImX](https://github.com/KangningZhang/DeepCaImX/tree/v2.0.0).
+I also collaborate with Professor **[Weijian Yang](https://www.ece.ucdavis.edu/~wejyang/home.html)** of UC Davis, where I worked on [DeepCaImX](https://github.com/KangningZhang/DeepCaImX/tree/v2.0.0).
 
 <!-- During High School, I worked as an intern for **PNNL**. There, I worked with [Dr. Zarrar Khan](https://climateanalytics.org/team/zarrar-khan) on the [ARGUS](http://ec2-3-21-37-120.us-east-2.compute.amazonaws.com/argus/inst/app/) data visualization platform, and assisted [Dr. Sha Yu](https://cgs.umd.edu/our-community/faculty-staff/sha-yu) on translating chinese green construction material policies.  -->
 
