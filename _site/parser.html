@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sean Tang</title>
+  <link rel="stylesheet" href="/styles/style.css">
+</head>
+<body>
+  <div class="navbar">
+  &nbsp;
+  <img src="/assets/sean_kayak.png" class="navimg" />
+  <a class="navlink" href="/index.html">Home</a>
+  <a class="navlink" href="/writing.html">Writing</a>
+  <a class="navlink" href="/misc.html">Misc</a>
+  <a class="navlink" href="https://github.com/SeanTang001">Github</a>
+  <a class="navlink" href="https://www.linkedin.com/in/sean-tang-96a15419a/">Linkedin</a>
+  <a class="navlink" href="mailto:seantang001@g.ucla.edu">Email</a>
+  <!-- <a class="navlink" href="/writing.html">Writing</a> -->
+  <br/><br/>
+</div>
+
+  <div class="main">
+    <h1 id="operator-precedence">Operator Precedence</h1>
+
+<p>See code at <a href="https://github.com/SeanTang001/control_code">here</a>.</p>
+
+<p>This project was inspired by an attempt at a <a href="https://esolangs.org/wiki/Turing_tarpit">turing tarpit</a> configuration language during one of my internships. I ended up getting stuck on implementing operator precedence. I decided to revisit the problem during the summer. I corrected some of the spelling here.</p>
+
+<h2 id="724">7/24</h2>
+
+<p>We propose a programming language of the following form:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>module test(int hello, bool foo) {
+    if hello &lt; 10 { # basic logic
+        return true
+    }
+    for i in range(100) { # unroll optimization
+        return false
+    }
+    end
+}
+
+a = hello + 2
+a = hello &amp; foo
+...
+</code></pre></div></div>
+
+<p>The grammar (in rough terms) looks like this:</p>
+<pre><code class="language-ebnf">m ::= module id (t id, ... , t id) {s, .. s}
+s ::= { s ... s } | id = e | if (e) s else s
+e ::= p1 &amp;&amp; p2 | p1 &lt; p2 | p1 + p2 | p1 - p2 | p1 * p2 | p1[ p2 ] | p.length | p.id(e, ... , e) | p
+p ::= c | true | false | id | !e | (e)
+c ::= 1|2|3|4|5|6|7|8|9
+id ::= char
+</code></pre>
+
+<p>This needs to be fully expanded out so the recursive parser can actually parse nesting</p>
+
+<h2 id="726">7/26</h2>
+
+<p>We want to implement arithmetics expression. We want to also implement precedence in it.</p>
+
+<pre><code class="language-enbf">e ::= term binop e | term
+term ::= num | id | ( e )
+</code></pre>
+
+<h3 id="tree-example">Tree Example</h3>
+
+<p>Ideally:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 + 2 * 4-&gt; 
+
+   +
+ /   \
+1     *
+   /    \    
+   2     4
+    
+</code></pre></div></div>
+
+<p>The computational graph has the plus sign at root, and the subsequent expression below; there is currently no precedence implemented.</p>
+
+<p>Maybe we should rewrite the binary to have a “binary-op” terminal so the result is a bit more easier to transform.</p>
+
+<h3 id="lexer">Lexer</h3>
+
+<p>I want to write a tokenizer. Something like:</p>
+
+<pre><code class="language-ebnf">TOKEN ::= all-char/num
+SEMICOLON ::= ;
+LCB ::= {
+RCB ::= }
+LB ::= (
+RB ::= )
+PERIOD ::= ,
+</code></pre>
+
+<p>Ended up doing this with regex</p>
+
+<h3 id="operator-precedence--associativity--ambiguity">Operator Precedence / Associativity / Ambiguity</h3>
+
+<p>I plan on putting this into the grammar:</p>
+
+<pre><code class="language-enbf">e = e1
+e1 = e2 (*|/) e2
+e2 = e3 (+|-) e3
+e3 = id
+</code></pre>
+
+<p>From GPT:</p>
+
+<pre><code class="language-ebnf">&lt;expr&gt; ::= &lt;equality&gt;
+
+&lt;equality&gt; ::= &lt;additive&gt; &lt;equality_tail&gt;
+&lt;equality_tail&gt; ::= ("==" | "!=") &lt;additive&gt; &lt;equality_tail&gt; | ε
+
+&lt;additive&gt; ::= &lt;multiplicative&gt; &lt;additive_tail&gt;
+&lt;additive_tail&gt; ::= ("+" | "-") &lt;multiplicative&gt; &lt;additive_tail&gt; | ε
+
+&lt;multiplicative&gt; ::= &lt;unary&gt; &lt;multiplicative_tail&gt;
+&lt;multiplicative_tail&gt; ::= ("*" | "/") &lt;unary&gt; &lt;multiplicative_tail&gt; | ε
+
+&lt;unary&gt; ::= ("-" | "!") &lt;unary&gt; | &lt;primary&gt;
+
+&lt;primary&gt; ::= "(" &lt;expr&gt; ")" | &lt;number&gt; | &lt;id&gt;
+</code></pre>
+
+<p>From Google:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>expression = term, { ("+" | "-"), term } ;
+term       = factor, { ("*" | "/"), factor } ;
+factor     = primary, { "^", factor } ; // For right-associativity of exponentiation
+primary    = number | "(", expression, ")" ;
+</code></pre></div></div>
+
+<p>Too complex to reason about. Might try an alternative that uses shunting yard on intermediate form of expression tree.</p>
+
+<p>https://en.wikipedia.org/wiki/Left_recursion#Removing_left_recursion</p>
+
+<p>https://langdev.stackexchange.com/questions/2648/how-can-the-shunting-yard-algorithm-be-adapted-to-handle-currying</p>
+
+<h2 id="727">7/27</h2>
+<p>Finished operator precedence / associativity. Ended up modifying the grammar and visitor.</p>
+
+<p>To illustrate the change, let’s do an example, take:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 * 2 + 3
+</code></pre></div></div>
+
+<p>With previous grammar of:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>_e ::= _s _binop _st | _num
+_st ::= _s | _s _binop _st | epsilon
+</code></pre></div></div>
+
+<p>This gets converted roughly into:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>e = 1 *   |
+        2 + 3  
+</code></pre></div></div>
+
+<p>The key is the fact that our grammar would group <code class="language-plaintext highlighter-rouge">2+3</code> in <code class="language-plaintext highlighter-rouge">_st</code>. This is both right associative (which is incorrect for math expressions which are left associative) and violates operator precedence.</p>
+
+<p>A more explicit example is:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>e = 1 - |
+      2 - 3
+</code></pre></div></div>
+
+<p>which is <code class="language-plaintext highlighter-rouge">1-(2-3)=2</code>; the correct parse should be <code class="language-plaintext highlighter-rouge">(1-2)-3=-4</code>.</p>
+
+<h3 id="implementing-left-associativity">Implementing Left Associativity</h3>
+
+<p>Let’s take an alternative grammar, where we try to remedy first the associativity problem.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>_e ::= _add  _addt
+_addt ::= (-|+) _add _addt | _num | epsilon
+</code></pre></div></div>
+
+<p>This ends up parsing out into:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>e = 1  |
+      - 2  |
+          - 3
+</code></pre></div></div>
+
+<p>Now this requires a bit of effort to convert back into
+an AST form, but generally, its not hard to see an evaluation where:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 + (-2) + (-3) = -4
+</code></pre></div></div>
+<p>as a result of the parse stricture. This nice. But we still do not resolve the issue of operator precedence.</p>
+
+<h3 id="implementing-operator-precedence">Implementing Operator Precedence</h3>
+
+<p>Let’s take this grammar snippet, where we implement layering for “+” and “*”:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>_e ::= _add
+_add ::= _mul  _addt
+_addt ::=  (+|-) _mul _addt | epsilon
+_mul ::= _num _mult
+_mult ::= (*|/) _num _mult | epsilon
+</code></pre></div></div>
+
+<p>Notice how <code class="language-plaintext highlighter-rouge">_mul</code> is “nested” within <code class="language-plaintext highlighter-rouge">_add</code>; this achieves the prioritization of <code class="language-plaintext highlighter-rouge">(*|/)</code> above <code class="language-plaintext highlighter-rouge">(+|-)</code> as whenever there is <code class="language-plaintext highlighter-rouge">*</code> present in the expression, we must result parse as:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>_num |
+    * _num
+</code></pre></div></div>
+
+<p>Let examine our starting example again:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1 * 2 + 3
+</code></pre></div></div>
+
+<p>Under this new grammar, it will be parsed into:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>_e =    _add
+       /      \ 
+    _mul    _  addt -----
+    /   \       |  \     \
+    1   _mult   +  _mul   _addt
+        /    \      |        \    
+        *    2      _num     epsilon
+                      |
+                      3
+</code></pre></div></div>
+
+<p>This tree would most likely be traversed as:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(1*2) + 3
+</code></pre></div></div>
+
+<h2 id="727-part-2">7/27 Part 2</h2>
+
+<p>Next thing to work on can be to add control statements. We already have function calls.
+Next to consider is if/else, and for (no while because we don’t do that)</p>
+
+<p>Maybe keywords like “return” can also be added;</p>
+
+<p>Specifically, the grammar had the following expansion:</p>
+
+<pre><code class="language-ebnf">_s ::= if ( _e ) { _sl }|_s
+</code></pre>
+
+<h2 id="728">7/28</h2>
+
+<p>Discovered a bug in my LL(k) parser; it does not handle null terminals correctly (tried to add a new production to describe multiple programs).</p>
+
+<p>Made a band-aid solution for now (checks if the production one layer below is nullable); need to find a more permanent solution.</p>
+
+<p>Some useful context on the <code class="language-plaintext highlighter-rouge">if len(tokens) == 0 or len(production_rule) == 0:</code> magic:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    if len(tokens) == 0 and len(production_rule) == 0:
+        return tokens, []
+    if len(tokens) == 0 and len(production_rule) &gt; 0:
+        tokens = [[]]
+    if len(tokens) &gt; 0 and len(production_rule) == 0:
+        return acceptor(tokens, [tokens])
+</code></pre></div></div>
+<p>Ended up doing a bit of rewrite; now code does the checking of null terminals on entry to make_parser, and all other calls to acceptor are just pure continuations.</p>
+
+<h2 id="729">7/29</h2>
+<p>I notice a problem with the recursive parser: we’re hitting recursion limit for longer inputs.</p>
+
+<p>Really sucks because AST generation code is highly dependent on the grammar structure atm and its kind of messy to update.</p>
+
+<p>If there was an easier way to express the grammar along with the corresponding rules to rule when parsing it would be nice.</p>
+
+<p>In the meanwhile, I’m going to consider some low-hanging fruit to achieve (maybe a visitor that converts from AST directly into the IR; I think we have the necessary amount of grammar for a basic output. Then we can continue onto doing the CS6120 content too.)</p>
+
+<p>Anyways, let’s consider some parser optimizations.</p>
+
+<h3 id="memoizing">Memoizing?</h3>
+
+<p>Let’s see if memoizing helps.</p>
+
+<p>It did not; each call to the function is unique because it contains all previous tokens that have not been parsed yet; each call is a unique combo of tokens and potential grammar</p>
+
+<h3 id="stack">Stack?</h3>
+
+<p>We now try a stack based approach; seemed promising but involves a pretty big rewrite.</p>
+
+<h3 id="implement-">Implement *?</h3>
+
+<p>What if we modify our grammar specification to allow for the OneOrMore-esque definition (this way we can avoild the tail grammar stuff we use) - this could involve a loop where we attempt to parse the rest of it until we hit an unparseable result, and then we attempt to finish it off with regular recursion.</p>
+
+<p>It make sense to keep the expression part of the grammar nested because the tree like structure is useful (versus the statements which are more like )</p>
+
+<h3 id="hybrid-approach">Hybrid Approach</h3>
+
+<p>Implement *, and then use a simpler grammar to describe expressions. During AST generation we can parse them and not worry about hitting recursion limit.</p>
+
+<h2 id="81">8/1</h2>
+
+<p>Attempted to implement *; actually quite difficult and could mess with code; Essentially, we rely on the behavior of recursive calls to ‘jump’ to the next correct position in the grammar’s production rule.</p>
+
+<h2 id="82">8/2</h2>
+
+<p>Was able to successfully implement. We use <code class="language-plaintext highlighter-rouge">&lt;nonterminal&gt;**</code> to represent <code class="language-plaintext highlighter-rouge">*</code>. Now we can parse as many modules as we like, and do not need to worry about recursion limit.</p>
+
+<p>Final grammar has been simplified to:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>grammar = [
+    "_prog",
+    {
+        "_prog":[
+            ["_m**"]
+        ],
+        "_m": [
+            ["module", "_id", "(","_pp**", "_p",")", "{", "_s**", "}"],
+        ],
+        "_pp": [ 
+            ["_p", ","],
+            E
+        ],
+        "_p":[
+            ["_d"],
+            E
+        ]
+        "_d": [
+            ["_t", "_id"]
+        ],
+        "_t": [
+            ["int"], ["bool"]
+        ],
+        "_id": [
+            ["next_word"]
+        ],
+        "_s": [
+            ["_d", "=", "_e", ";"],
+            ["_id", "=", "_e", ";"],
+            ["_d", ";"],
+            ["_if"],
+        ],
+        "_if":[
+            # ["if", "(", "_e", ")","{", "_sl","}", "_iftail"]
+            ["if", "(", "_e", ")","{", "_s**","}"]
+        ],
+        # "_iftail":[
+        #     ["_elif", "_iftail"],
+        #     ["_else"],
+        #     E
+        # ],
+        # "_elif":[
+        #     ["elif", "(", "_e", ")","{", "_sl","}"],
+        #     E
+        # ],
+        # "_else":[
+        #     ["else", "{", "_sl", "}"],
+        #     E
+        # ],
+        # equality: additive ((== | !=) additive)*
+        "_e": [
+            ["_add", "_eq_tail"]
+        ],
+        "_eq_tail": [
+            ["==", "_add"],
+            ["!=", "_add"],
+            ["&lt;=", "_add"],
+            ["&gt;=", "_add"],
+            ["&lt;", "_add"],
+            ["&gt;", "_add"],
+            E
+        ],
+
+        # additive: multiplicative ((+ | -) multiplicative)*
+        "_add": [
+            ["_mul", "_add_tail"]
+        ],
+        "_add_tail": [
+            ["+", "_mul", "_add_tail"],
+            ["-", "_mul", "_add_tail"],
+            E
+        ],
+        
+        # multiplicative: unary ((* | /) unary)*
+        "_mul": [
+            ["_unary", "_mul_tail"]
+        ],
+        "_mul_tail": [
+            ["*", "_unary", "_mul_tail"],
+            ["/", "_unary", "_mul_tail"],
+            E
+        ],
+
+        # unary: (! | -) unary | primary
+        "_unary": [
+            ["!", "_unary"],
+            ["-", "_unary"],
+            ["_primary"]
+        ],
+
+        # primary: (expr) | number | id
+        "_primary": [
+            ["(", "_e", ")"],
+            ["_num"],
+            ["_id"],
+            ["_id", "(", "_pp**", "_p", ")"]
+        ],
+
+        "_num":[
+            ["next_num"]
+        ]
+    }
+]
+</code></pre></div></div>
+
+  </div>
+</body>
+</html>

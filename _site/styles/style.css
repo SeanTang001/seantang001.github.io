@@ -1,0 +1,106 @@
+@media (min-width: 0px) {
+	body {
+		padding-top: 2%;
+		padding-left: 5%;
+		padding-bottom: 3%;
+		padding-right: 2%;
+		font-family: Roboto, Verdana, sans-serif;
+		font-size: calc(9px + 1.5vw);
+	}
+	h1 {
+		font-size: calc(12px + 2vw);
+	}
+	h3 {
+		font-size: calc(10px + 1.33vw);
+	}
+	h4 {
+		font-size: calc(9.5px + 1.42vw);
+	}
+	a + a {
+		margin-top: calc(2.5px + 0.33vw);
+	}
+	p {
+		text-align: justify;
+	}	
+	.navbar {
+		width: calc(50px + 8.33vw);
+		position: fixed;
+		text-align: right;
+		font-size: calc(8px + 1.33vw);
+	}
+	.navlink {
+		display: inline-block;
+		width: 100%;	
+		text-decoration: none;	
+	}
+	.navlink:link {
+		text-decoration: none;
+		color: inherit;
+	}
+	.navlink:visited {
+		text-decoration: none;
+		color: inherit;	
+	}
+	.navlink:hover {
+		background-color: #ed857b;
+		text-decoration: none; 
+	}
+	.navlink:active {
+		text-decoration: none; 
+	}
+	.navhead {
+		font-weight: bold;
+		text-align: right;
+	}
+	.main {
+		margin-left: calc(80px + 13.3vw);
+	}
+	.navimg {
+		width: 100%;
+		max-width: 200px;
+		display: block;
+		margin-bottom: 1em;
+	  	margin-left: auto;
+  		margin-right: 0;
+	}
+	code {
+	white-space : pre-wrap !important;
+	}
+
+}
+@media (min-width: 613px) {
+	body {
+		padding-top: 2%;
+		padding-left: 5%;
+		padding-bottom: 3%;
+		padding-right: calc(20vw);
+		font-family: Roboto, Verdana, sans-serif;
+		font-size: 16px;
+	}
+	h1 {
+		font-size: 24px;
+	}
+	h3 {
+		font-size: 20px;
+	}
+	h4 {
+		font-size: 19px;
+	}
+	a + a {
+		margin-top: 5px;
+	}
+	.navbar {
+		font-size: 20px;
+	}
+}
+@media (min-width: 1000px) {
+	body {
+		padding-top: 2%;
+		padding-left: 3%;
+		padding-bottom: 3%;
+		padding-right: 20vw;
+		font-family: Roboto, Verdana, sans-serif;
+		font-size: 16px;
+	}
+}
+

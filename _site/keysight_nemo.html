@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sean Tang</title>
+  <link rel="stylesheet" href="/styles/style.css">
+</head>
+<body>
+  <div class="navbar">
+  &nbsp;
+  <img src="/assets/sean_kayak.png" class="navimg" />
+  <a class="navlink" href="/index.html">Home</a>
+  <a class="navlink" href="/writing.html">Writing</a>
+  <a class="navlink" href="/misc.html">Misc</a>
+  <a class="navlink" href="https://github.com/SeanTang001">Github</a>
+  <a class="navlink" href="https://www.linkedin.com/in/sean-tang-96a15419a/">Linkedin</a>
+  <a class="navlink" href="mailto:seantang001@g.ucla.edu">Email</a>
+  <!-- <a class="navlink" href="/writing.html">Writing</a> -->
+  <br/><br/>
+</div>
+
+  <div class="main">
+    <h1 id="setting-up-cyperf-to-test-with-nvidia-nemo-guardrail">Setting Up CyPerf to test with Nvidia Nemo Guardrail</h1>
+
+<p>In this writeup, we setup the necessary GCP infrastructure to test a Nemo LLM Guardrail server with simulated requests sent via CyPerf.</p>
+
+<h2 id="gcp-setup">GCP Setup</h2>
+
+<h3 id="gcp-setup-with-controller-agent-pair">GCP setup with controller-agent pair</h3>
+
+<p>To setup GCP, we can use the deployment scripts provided in the <a href="https://github.com/Keysight/cyperf/tree/CyPerf-6.0/deployment/gcp/deploymentmanager/controller_and_agent_pair">controller-agent pair deployment script</a> provided by the cyperf github repo. The specific script to use may differ based on your region, but for our setup we deployed to the US-Central region using the following:</p>
+
+<div style="max-width:100%;" class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; gcloud deployment-manager deployments create keysight-cyperf-gcp --template cyperf_controller_and_agent_pair_new_vpc.py --properties zone:us-central1-c,region:us-central1,agentMachineType: c2-standard-4,agentSourceImage:keysight-cyperf-agent-6-0, managementNetworkCIDR:172.16.5.0/24,testNetworkCIDR:10.0.0.0/8,agentCount:2,controllerSourceImage:keysight-cyperf-controller-6-0,controllerMachineType: c2-standard-8,uthUsername:"admin",authPassword:"CyPerf&amp;Keysight#1"
+</code></pre></div></div>
+
+<p>Separately, spin up a VM instance via the gcp compute engine gui. This separate instance will be used to host the Nemo guardrail server itself.</p>
+
+<p>Your VM instances should end up looking something like this:</p>
+
+<p><img src="./assets/keysight_docs/vms1.png" alt="VMs" style="max-width:100%;" /></p>
+
+<h3 id="gcp-setup-with-single-agent">GCP setup with single agent</h3>
+
+<p>Note, our original setup involved running the <a href="https://github.com/Keysight/cyperf/tree/CyPerf-6.0/deployment/gcp/deploymentmanager/single_agent">individual controller scripts</a> first and then running the agent script later hence the different region; we recommend using the <a href="https://github.com/Keysight/cyperf/tree/CyPerf-6.0/deployment/gcp/deploymentmanager/controller_and_agent_pair">controller-agent pair deployment script</a> as it is more convenient and insures correct configuration.</p>
+
+<h2 id="nemo-guardrail-setup">Nemo guardrail setup</h2>
+
+<p>Once the VM instance is setup, ssh into the machine and download the nemoguardrail. In our case, we used pip:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install </span>nemoguardrails[dev]
+</code></pre></div></div>
+
+<p>This will have added to your path an runnable script called <code class="language-plaintext highlighter-rouge">nemoguardrails</code>. We will specifically use the server mode.</p>
+
+<p>In order to use the server mode, we need to have the correct configuration. Download the configuration and other helper scripts needed to run the setup from this <a href="https://drive.google.com/file/d/1jLBcJc_K9UPlNJQBKg-BzTjGyyO-bv7z/view?usp=sharing">google drive file</a>.</p>
+
+<p>Once downloaded, <code class="language-plaintext highlighter-rouge">scp</code> to the VM instace and unzip the file.</p>
+
+<p>Make sure to add your <code class="language-plaintext highlighter-rouge">open-ai</code> API key to <code class="language-plaintext highlighter-rouge">./config/config1/config.yaml</code>. For example:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="pi">-</span> <span class="na">type</span><span class="pi">:</span> <span class="s">main</span>
+    <span class="na">engine</span><span class="pi">:</span> <span class="s">openai</span>
+    <span class="na">parameters</span><span class="pi">:</span>
+      <span class="na">model</span><span class="pi">:</span> <span class="s">gpt-3.5-turbo</span>
+      <span class="c1">#base_url: http://34.73.65.227/v1/</span>
+      <span class="c1">#base_url: http://172.16.5.3:100/v1/</span>
+      <span class="na">api_key</span><span class="pi">:</span> <span class="s2">"</span><span class="s">sk-proj-EspX4NttydBfw-YsF00"</span>
+
+</code></pre></div></div>
+
+<p>At the root of the folder, run the make target to start the server and proxies (the proxy helps visualize the traffic and also resolves some HTTP issues):</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> make start_servers_proxy
+</code></pre></div></div>
+<p>to see the traffic, run</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> tmux a
+</code></pre></div></div>
+<p>to stop the server and proxies, exit out of tmux with `ctrl+b d’ and run the clean target:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> make clean
+</code></pre></div></div>
+
+<p>You can examine the make recipe and also the config folder to understand what configuration was used for the guardrail server.</p>
+
+<h2 id="cyperf-controller-setup">CyPerf controller setup</h2>
+
+<p>Download the configuration from <a href="https://drive.google.com/file/d/1NU32RK-4jTjKxd3n8PEK3nJEYWVSWnh6/view?usp=sharing">here</a>.</p>
+
+<p>In CyPerf, open the <code class="language-plaintext highlighter-rouge">Browse Configs</code> tab via the Config Icon:</p>
+
+<p><img src="./assets/keysight_docs/config_icon.png" alt="" style="max-width:100%;" /></p>
+
+<p>Then, use the <code class="language-plaintext highlighter-rouge">Import</code> button to import the downloaded configuration zip:</p>
+
+<p><img src="./assets/keysight_docs/config_import.png" alt="" style="max-width:100%;" /></p>
+
+<p>Then, you will need to modify the <code class="language-plaintext highlighter-rouge">DUT</code> modal box here:</p>
+
+<p><img src="./assets/keysight_docs/dut.png" alt="" style="max-width:100%;" /></p>
+
+<p>The reverse-proxy IP will likely need to be changed, so update it to be the controller you choose as your server.</p>
+
+<p><img src="./assets/keysight_docs/rev_proxy.png" alt="" style="max-width:100%;" /></p>
+
+<p>Now, you should be ready to run the test.</p>
+
+<h2 id="running-the-test">Running the test</h2>
+
+<p>If your test runs correctly, you should be able to see proxy going through your tmux shell on the nemo guardrail server.</p>
+
+<p><img src="./assets/keysight_docs/example.png" alt="" style="max-width:100%;" /></p>
+
+  </div>
+</body>
+</html>
