@@ -7,7 +7,7 @@ title: Sean Tang
 
 [Configuration Clock](https://mikehadlow.blogspot.com/2012/05/configuration-complexity-clock.html) In particular, I witnessed my team at SpaceX pass noon and back to 3:00. 
 
-<!-- [程序员的三大浪漫](https://www.zhihu.com/question/27323148/answer/36153626) -->
+[The Three Romances of Programmers](https://www.zhihu.com/question/27323148/answer/36153626)
 
 [Lilypond Transcriptionf of Summer Fling](https://github.com/SeanTang001/summer_fling)
 

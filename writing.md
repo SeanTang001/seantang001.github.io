@@ -21,10 +21,10 @@ Zhang, K., **Tang, S.**, Zhu, V. et al. *An end-to-end recurrent compressed sens
 
 [2024/11] [Keysight Device Audit Report](https://www.overleaf.com/read/jckwqmgcjhyq#9600f6)
 
-[2024/05] [ECE C147 Neural Networks and Deep Learning Final Report](https://www.overleaf.com/read/vxppwwwpsfpk#d16fd1)
+<!-- [2024/05] [ECE C147 Neural Networks and Deep Learning Final Report](https://www.overleaf.com/read/vxppwwwpsfpk#d16fd1) -->
 
 [2024/03] [CS 188 Computer Vision Final Report](https://ucladeepvision.github.io/CS188-Projects-2024Winter/2024/03/18/team32-object-detection.html)
 
 [2023/12] [CS 111 Operating System Final Report](https://drive.google.com/file/d/1EWdwR9viYzkza3JbbaWVmabm3SmdzH7C/view?usp=sharing)
 
-[2023/02] [ECE 102 Signals & System Midterm Cheat Sheet](https://www.overleaf.com/read/dwznqncmdjsw#b71f76)
+<!-- [2023/02] [ECE 102 Signals & System Midterm Cheat Sheet](https://www.overleaf.com/read/dwznqncmdjsw#b71f76) -->
