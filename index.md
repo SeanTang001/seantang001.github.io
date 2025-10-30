@@ -23,11 +23,11 @@ I'm also a member of the Flight Software Team at **[ELFIN](https://elfin.igpp.uc
 
 ### Experience
 
-I'm currently interning at **NVIDIA** for summer 2025 on the Autonomous Vehicles Platform Team, working on their Data Recording System.
+I previously interned at **NVIDIA** on the Autonomous Vehicles Platform Team, working on their Special Scenario Data Recording System.
 
-I previously interned at **SpaceX** on the Starship Software Team, working on the software responsible for performing checkouts tasks on the Raptor Engine. I'm lucky to have been part of the team during the historic [Flight 5](https://www.youtube.com/watch?v=hI9HQfCAw64).
+Prior to that, I interned at **SpaceX** on the Starship Software Team, working on the software responsible for performing checkouts tasks on the Raptor Engine. I'm lucky to have been part of the team during the historic [Flight 5](https://www.youtube.com/watch?v=hI9HQfCAw64).
 
-Prior to that, I interned with **Mainspring Energy** for two summers, working on various software components of the [Linear Generator](https://www.mainspringenergy.com/product/). 
+Before that, I interned with **Mainspring Energy** for two summers, working on various software components of the [Linear Generator](https://www.mainspringenergy.com/product/). 
 
 ### UCLA
 
