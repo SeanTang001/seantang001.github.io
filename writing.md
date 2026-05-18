@@ -11,6 +11,8 @@ Zhang, K., **Tang, S.**, Zhu, V. et al. *An end-to-end recurrent compressed sens
 
 ### Writing
 
+[2026/05] [Partial Evaluation Notes](pe.md) 
+
 [2025/08] [Setting up Nvidia Nemo Guardrail with Keysight CyPerf](keysight_nemo.html)
 
 [2025/07] [Operator Precedence Parser](parser.html)
